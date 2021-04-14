@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <PackageDescription>[Demo] Common code for APIs</PackageDescription>
+    <RepositoryUrl>https://github.com/blairlearn/NCI.OCPL.Api.Shared</RepositoryUrl>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <Version>1.0.1</Version>
+    <Authors>National Cancer Institute - Office of Communications and Public Liaison</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NEST" Version="7.9.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+    api:
+        build:
+            ## We need the context of our build to be the root of the
+            ## project, which is where our code lives.
+            context: ../../
+            ## This path is relative to the context. Fun, eh?
+            dockerfile: integration-tests/docker-nciocpl-api-common/api/Dockerfile
+        ports:
+            # Lets make it one more than the default aspnetcore app
+            - "5000:5000"
+        ## NOTE: This does NOT mean that this machine will wait
+        ## for elasticsearch to be running, just that the
+        ## elasticsearch container should be running first.
+        networks:
+            listingpagesapi:
+                aliases:
+                    - api
+
+    ## Commenting out the test container as there seem to be some
+    ## performance issues with Karate + API + ES running in docker.
+    # test-container:
+    #     image: openjdk:11
+    #     volumes:
+    #         - ..:/usr/src/app
+    #     environment:
+    #            - "ELASTIC_SEARCH_HOST=http://elasticsearch:9200"
+    #            - "KARATE_APIHOST=http://api:5000"
+    #     working_dir: /usr/src/app
+    #     command: /usr/src/app/bin/run-integration-tests.sh
+    #     ## NOTE: This does NOT mean that this machine will wait
+    #     ## for elasticsearch to be running, just that the
+    #     ## elasticsearch container should be running first.
+    #     networks:
+    #         listingpagesapi:
+    #             aliases:
+    #                 - tester
+    #     depends_on:
+    #         - elasticsearch
+    #         - api
+
+networks:
+  listingpagesapi:
