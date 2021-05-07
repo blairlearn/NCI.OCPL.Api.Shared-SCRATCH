@@ -39,7 +39,8 @@ jobs:
               if [ "$RUNNER_OS" == "Windows" ]; then
                 dotnet test
               else
-                dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=../../lcov test/**
+                dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=../../lcov/NCI.OCPL.Api.Common test/NCI.OCPL.Api.Common
+                dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=../../lcov/NCI.OCPL.Api.Common.Testing test/NCI.OCPL.Api.Common.Testing
               fi
         shell: bash
       - name: Save Code Coverage Output
