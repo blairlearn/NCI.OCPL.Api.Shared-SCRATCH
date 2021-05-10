@@ -301,7 +301,7 @@ namespace NCI.OCPL.Api.Common
             }
             else
             {
-                throw new Exception("No servers configured");
+                throw new APIInternalException("No servers configured");
             }
 
             return uris;
