@@ -59,8 +59,11 @@ namespace NCI.OCPL.Api.Common.Testing
             Type returnType = typeof(TReturn);
             Type handlerType = null;
 
-            //Loop through the register handlers and see if our type is registered, OR
-            //if a base class is registered.
+            // Loop through the register handlers and see if our type is registered, OR
+            // if a base class is registered.
+            // NOTE: This is expressly for the purpose of catching duplicate handlers and
+            // cases where NEST classes are subclasses, NOT where a class and base class are
+            // registered.
             foreach (Type type in _callbackHandlers.Keys)
             {
                 if (returnType == type || returnType.GetTypeInfo().IsSubclassOf(type))
