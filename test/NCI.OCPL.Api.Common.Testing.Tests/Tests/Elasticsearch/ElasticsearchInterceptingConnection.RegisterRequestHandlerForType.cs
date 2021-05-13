@@ -1,21 +1,19 @@
 using System;
 
 using Elasticsearch.Net;
-using Nest;
 
 using NCI.OCPL.Api.Common.Testing;
 using Xunit;
-using System.Reflection;
 
 namespace NCI.OCPL.Api.Common
 {
   /// <summary>
-  /// Common code for ElasticsearchInterceptingConnection tests.
+  /// RegisterRequestHandlerForType tests.
   /// </summary>
   public partial class ElasticsearchInterceptingConnectionTest
   {
     /// <summary>
-    /// Verify that multiple handlers can't be registered for the same type.
+    /// Multiple handlers can't be registered for the same type.
     /// </summary>
     [Fact]
     public void RegisterRequestHandlerForType_DuplicateTypes()
