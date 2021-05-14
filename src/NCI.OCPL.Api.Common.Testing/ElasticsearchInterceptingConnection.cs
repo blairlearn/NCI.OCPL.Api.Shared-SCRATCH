@@ -59,11 +59,8 @@ namespace NCI.OCPL.Api.Common.Testing
             Type returnType = typeof(TReturn);
             Type handlerType = null;
 
-            // Loop through the register handlers and see if our type is registered, OR
-            // if a base class is registered.
-            // NOTE: This is expressly for the purpose of catching duplicate handlers and
-            // cases where NEST classes are subclasses, NOT where a class and base class are
-            // registered.
+            //Loop through the register handlers and see if our type is registered, OR
+            //if a base class is registered.
             foreach (Type type in _callbackHandlers.Keys)
             {
                 if (returnType == type || returnType.GetTypeInfo().IsSubclassOf(type))
@@ -174,14 +171,7 @@ namespace NCI.OCPL.Api.Common.Testing
             Exception processingException = null;
             ResponseData responseData = new ResponseData();
 
-            try
-            {
-                this.ProcessRequest<TReturn>(requestData, responseData);
-            }
-            catch (System.Exception ex)
-            {
-                processingException = ex;
-            }
+            this.ProcessRequest<TReturn>(requestData, responseData);
 
             return ResponseBuilder.ToResponse<TReturn>(requestData, processingException, responseData.StatusCode, null, responseData.Stream, responseData.ResponseMimeType);
         }
@@ -191,14 +181,7 @@ namespace NCI.OCPL.Api.Common.Testing
             Exception processingException = null;
             ResponseData responseData = new ResponseData();
 
-            try
-            {
-                this.ProcessRequest<TReturn>(requestData, responseData);
-            }
-            catch (System.Exception ex)
-            {
-                processingException = ex;
-            }
+            this.ProcessRequest<TReturn>(requestData, responseData);
 
             return await ResponseBuilder.ToResponseAsync<TReturn>(requestData, processingException, responseData.StatusCode, null, responseData.Stream, responseData.ResponseMimeType, cancellationToken);
         }
@@ -208,7 +191,7 @@ namespace NCI.OCPL.Api.Common.Testing
         /// </summary>
         /// <param name="requestData">The request object</param>
         /// <returns>JObject containing the request</returns>
-        public JObject GetRequestPost(RequestData requestData)
+        public JToken GetRequestPost(RequestData requestData)
         {
             //Some requests can have this as null.  That is ok...
             if (requestData.PostData == null)
@@ -222,7 +205,7 @@ namespace NCI.OCPL.Api.Common.Testing
                 postBody = Encoding.UTF8.GetString(stream.ToArray());
             }
 
-            return JObject.Parse(postBody);
+            return JToken.Parse(postBody);
         }
     }
 }
