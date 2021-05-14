@@ -8,6 +8,7 @@ using NCI.OCPL.Api.Common.Testing;
 using Moq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace NCI.OCPL.Api.Common
 {
@@ -36,10 +37,11 @@ namespace NCI.OCPL.Api.Common
     }
 
     [Theory]
-    [InlineData(@"{ ""string_property"": ""string value"", ""bool_property"": true, ""integer_property"": 19, ""null"": null }")]
+    //[InlineData(@"{ ""string_property"": ""string value"", ""bool_property"": true, ""integer_property"": 19, ""null"": null }")]
+    [InlineData(@"[""array value 1"", ""array value 2"", ""array value 3""]")]
     public void GetRequestPost_WithData(string data)
     {
-      JObject expected = JObject.Parse(data);
+      JToken expected = JToken.Parse(data);
 
       Mock<IConnectionConfigurationValues> mockConfig = new Mock<IConnectionConfigurationValues>();
       mockConfig.Setup(cfg => cfg.RequestTimeout).Returns(new TimeSpan(0, 0, 5));
@@ -64,7 +66,7 @@ namespace NCI.OCPL.Api.Common
 
       ElasticsearchInterceptingConnection conn = new ElasticsearchInterceptingConnection();
 
-      JObject actual = conn.GetRequestPost(requestData);
+      JToken actual = conn.GetRequestPost(requestData);
 
       Assert.Equal(expected, actual, new JTokenEqualityComparer());
     }
