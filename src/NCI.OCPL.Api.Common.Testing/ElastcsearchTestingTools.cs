@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace NCI.OCPL.Api.Common.Testing
 {
@@ -9,11 +10,11 @@ namespace NCI.OCPL.Api.Common.Testing
   /// </summary>
   public static class ElastcsearchTestingTools
   {
-    static public Stream MockEmptyResponse
+    static public string MockEmptyResponseString
     {
       get
       {
-        string empty = @"
+        return @"
 {
     ""took"": 223,
     ""timed_out"": false,
@@ -29,7 +30,14 @@ namespace NCI.OCPL.Api.Common.Testing
         ""hits"": []
     }
 }";
-        byte[] byteArray = Encoding.UTF8.GetBytes(empty);
+      }
+    }
+
+    static public Stream MockEmptyResponse
+    {
+      get
+      {
+        byte[] byteArray = Encoding.UTF8.GetBytes(MockEmptyResponseString);
         return new MemoryStream(byteArray);
       }
     }
