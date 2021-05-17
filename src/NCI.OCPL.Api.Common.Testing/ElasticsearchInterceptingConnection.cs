@@ -94,13 +94,18 @@ namespace NCI.OCPL.Api.Common.Testing
             this._defCallbackHandler = callback;
         }
 
-        private void ProcessRequest<TReturn>(RequestData requestData, ResponseData responseData)
+        /// !!!! DO NOT OVERRIDE THIS METHOD! !!!!
+        /// This is the shared guts of the Request/RequestAsync methods. It really ought to be private,
+        /// but the ResponseBuilder class required of those methods is static (it not only can't be mocked,
+        /// it can't even be passed in), rendering both methods untestable. Making this one protected at least
+        /// allows the real logic to be tested.
+        protected void ProcessRequest<TReturn>(RequestData requestData, ResponseData responseData)
             where TReturn : class
         {
             Type returnType = typeof(TReturn);
                 bool foundHandler = false;
 
-                // Loop through the register handlers and see if our type is registered, OR
+                // Loop through the registered handlers and see if our type is registered, OR
                 // if a base class is registered.
                 foreach (Type type in _callbackHandlers.Keys)
                 {
