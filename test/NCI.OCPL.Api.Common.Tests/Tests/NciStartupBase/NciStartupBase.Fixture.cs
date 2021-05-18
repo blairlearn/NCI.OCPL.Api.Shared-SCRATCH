@@ -9,18 +9,19 @@ namespace NCI.OCPL.Api.Common
   public class NciStartupBaseTestFixture : IDisposable
   {
     /// <summary>
-    /// Directory where temporary files may be written.
+    /// Directory where temporary files may be written. Use this when a test
+    /// requires a unique location in the file system.
     /// </summary>
-    public string BaseLocation { get; set; }
+    public string TestLocation { get; set; }
 
     public NciStartupBaseTestFixture()
     {
-      BaseLocation = Path.Join(Path.GetTempPath(), nameof(NciStartupBaseTestFixture));
+      TestLocation = Path.Join(Path.GetTempPath(), nameof(NciStartupBaseTestFixture));
     }
 
     public void Dispose()
     {
-      Directory.Delete(BaseLocation, true);
+      Directory.Delete(TestLocation, true);
     }
   }
 

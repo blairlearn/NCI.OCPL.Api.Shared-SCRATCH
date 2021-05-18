@@ -1,6 +1,7 @@
 using System;
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
 using Moq;
 using Xunit;
 
@@ -8,6 +9,26 @@ namespace NCI.OCPL.Api.Common
 {
   public partial class NciStartupBaseTest : IClassFixture<NciStartupBaseTestFixture>
   {
+    /// <summary>
+    /// Replacement for any place an instance of IHostingEnvironment is required.
+    /// Ideally, this wouldn't be necessary and we could just mock the entire object,
+    /// however some methods (notably, IsDevelopment()) are extension methods and cannot
+    /// be mocked.
+    /// </summary>
+    private class MockHostingEnvironment : IHostingEnvironment
+    {
+      public string ApplicationName{get;set;} = "unitTest";
+      public string ContentRootPath{get;set;} = Environment.CurrentDirectory;
+      public string EnvironmentName{get;set;} = "unitTest";
+      public string WebRootPath{get;set;} = Environment.CurrentDirectory;
+      public IFileProvider WebRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+      public IFileProvider ContentRootFileProvider { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+      private bool isDevelopment = false;
+      public bool IsDevelopment() => isDevelopment;
+      public void SetIsDevelopment(bool value) => isDevelopment = value;
+    }
+
     public NciStartupBaseTest(NciStartupBaseTestFixture fixture)
     {
       this.Fixture = fixture;
@@ -17,26 +38,5 @@ namespace NCI.OCPL.Api.Common
     /// Instance of the test fixture, avaialable for any test which needs it.
     /// </summary>
     private NciStartupBaseTestFixture Fixture {get;set;}
-
-
-    /// <summary>
-    /// An IHostingEnvironment instance for unit tests.
-    /// </summary>
-    /// <value>A mock instance of IHostingEnvironment with some default
-    /// properties already set.
-    /// </value>
-    private Mock<IHostingEnvironment> HostingEnvironment
-    {
-      get
-      {
-        Mock<IHostingEnvironment> env = new Mock<IHostingEnvironment>();
-        env.Setup(e => e.ApplicationName).Returns("unitTest");
-        env.Setup(e => e.ContentRootPath).Returns(Environment.CurrentDirectory);
-        env.Setup(e => e.EnvironmentName).Returns("unitTest");
-        env.Setup(e => e.WebRootPath).Returns(Environment.CurrentDirectory);
-
-        return env;
-      }
-    }
   }
 }

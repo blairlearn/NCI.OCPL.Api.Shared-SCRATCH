@@ -13,17 +13,23 @@ using NCI.OCPL.Api.Common.Controllers;
 
 namespace NCI.OCPL.Api.Common
 {
+  /// <summary>
+  /// Tests for NciStartupBase.ConfigureServices
+  /// </summary>
   public partial class NciStartupBaseTest
   {
     /// <summary>
     /// Verify that subclasses of NciStartupBase have a chance to add required services.
     /// </summary>
     [Fact]
-    public void ConfigureServices_SubclassSetup()
+    public void ConfigureServices_SubclassSetupServices()
     {
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(HostingEnvironment.Object){ CallBase = true };
+      IHostingEnvironment hostenv = new MockHostingEnvironment();
+
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv){ CallBase = true };
 
       mockStartup.Protected().Setup("AddAdditionalConfigurationMappings", Moq.Protected.ItExpr.IsAny<IServiceCollection>());
+      mockStartup.Protected().Setup("AddAppServices", Moq.Protected.ItExpr.IsAny<IServiceCollection>());
 
       NciStartupBase startup = mockStartup.Object;
 
@@ -32,16 +38,18 @@ namespace NCI.OCPL.Api.Common
 
       // Verify the subclass had a chance to add services.
       mockStartup.Protected().Verify("AddAdditionalConfigurationMappings", Times.Once(), Moq.Protected.ItExpr.IsAny<IServiceCollection>());
+      mockStartup.Protected().Verify("AddAppServices", Times.Once(), Moq.Protected.ItExpr.IsAny<IServiceCollection>());
     }
 
     /// <summary>
-    /// Verify a failure to get an Elasticsearch client instance
-    /// when no servers are configured.
+    /// Fail to get an Elasticsearch client instance when no servers are configured.
     /// </summary>
     [Fact]
     public void ConfigureServices_ElasticsearchBadConfiguration()
     {
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(HostingEnvironment.Object) { CallBase = true };
+      IHostingEnvironment hostenv = new MockHostingEnvironment();
+
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv) { CallBase = true };
 
       NciStartupBase startup = mockStartup.Object;
 
@@ -58,7 +66,7 @@ namespace NCI.OCPL.Api.Common
     }
 
     /// <summary>
-    /// Verify ability to get an Elasticsearch client instance with a valid configuration.
+    /// Get an Elasticsearch client instance with a valid configuration.
     /// </summary>
     [Fact]
     public void ConfigureServices_ElasticsearchGoodConfiguration()
@@ -75,15 +83,15 @@ namespace NCI.OCPL.Api.Common
       ";
 
       // Create an appsettings.json in a location where only this test will see it.
-      string configLocation = Path.Join(Fixture.BaseLocation, nameof(ConfigureServices_ElasticsearchGoodConfiguration));
+      string configLocation = Path.Join(Fixture.TestLocation, nameof(ConfigureServices_ElasticsearchGoodConfiguration));
       DirectoryInfo di = Directory.CreateDirectory(configLocation);
       File.WriteAllText(Path.Join(configLocation, "appsettings.json"), appsettings);
 
-      // We need a specific hosting environment for this test.
-      Mock<IHostingEnvironment> hostingEnv = new Mock<IHostingEnvironment>();
-      hostingEnv.Setup(env => env.ContentRootPath).Returns(configLocation);
+      // Customize the hosting environment for this test.
+      IHostingEnvironment hostenv = new MockHostingEnvironment();
+      hostenv.ContentRootPath = configLocation;
 
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostingEnv.Object) { CallBase = true };
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv) { CallBase = true };
 
       NciStartupBase startup = mockStartup.Object;
 
@@ -103,7 +111,9 @@ namespace NCI.OCPL.Api.Common
     [Fact]
     public void ConfigureServices_GetLoggers()
     {
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(HostingEnvironment.Object) { CallBase = true };
+      IHostingEnvironment hostenv = new MockHostingEnvironment();
+
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv) { CallBase = true };
 
       mockStartup.Protected().Setup("AddAdditionalConfigurationMappings", Moq.Protected.ItExpr.IsAny<IServiceCollection>());
 

@@ -30,9 +30,9 @@ namespace NCI.OCPL.Api.Common.Models
       string input = "the message";
       string expected = "{\"Message\":\"the message\"}";
 
-      ErrorMessage test = new ErrorMessage();
-      test.Message = input;
-      string actual = test.ToString();
+      ErrorMessage error = new ErrorMessage();
+      error.Message = input;
+      string actual = error.ToString();
 
       Assert.Equal(expected, actual);
     }

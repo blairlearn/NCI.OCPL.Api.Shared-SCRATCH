@@ -15,7 +15,9 @@ namespace NCI.OCPL.Api.Common
     [Fact]
     public void Constructor()
     {
-      Mock<NciStartupBase> startup = new Mock<NciStartupBase>(HostingEnvironment.Object){ CallBase = true };
+      IHostingEnvironment hostenv = new MockHostingEnvironment();
+
+      Mock<NciStartupBase> startup = new Mock<NciStartupBase>(hostenv){ CallBase = true };
 
       NciStartupBase mock = startup.Object;
 
