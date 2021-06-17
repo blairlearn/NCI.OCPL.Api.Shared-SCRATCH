@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using Elasticsearch.Net;
 using Nest;
 
-using Moq;
-
 namespace NCI.OCPL.Api.Common.Testing
 {
 
