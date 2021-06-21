@@ -1,19 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <Version>1.0.0</Version>
 
     <PackageDescription>Common code for use between APIs.</PackageDescription>
-    <RepositoryUrl>https://github.com/NCIOCPL/NCI.OCPL.Api.Shared</RepositoryUrl>
+    <!-- <RepositoryUrl>https://github.com/NCIOCPL/NCI.OCPL.Api.Shared</RepositoryUrl> -->
+<RepositoryUrl>https://github.com/blairlearn/NCI.OCPL.Api.Shared-SCRATCH</RepositoryUrl>
     <Authors>National Cancer Institute - Office of Communications and Public Liaison</Authors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0" AllowExplicitVersion="True" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
+
+    <!-- Explicit framework reference because this project builds a library to support APIs, not the actual APIs.-->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+
     <PackageReference Include="NEST" Version="5.6.*" />
-    <PackageReference Include="NSwag.AspNetCore" Version="13.2.*" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.11.*" />
   </ItemGroup>
 </Project>

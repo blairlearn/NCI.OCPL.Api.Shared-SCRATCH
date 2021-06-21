@@ -24,8 +24,8 @@ namespace integration_test_harness
     /// Initializes a new instance of the <see cref="T:NCI.OCPL.Api.Common.Startup"/> class.
     /// </summary>
     /// <param name="env">Env.</param>
-    public Startup(IHostingEnvironment env)
-        : base(env) { }
+    public Startup(IConfiguration configuration)
+            : base(configuration) { }
 
 
     /*****************************
@@ -60,7 +60,7 @@ namespace integration_test_harness
     /// <param name="env">Env.</param>
     /// <param name="loggerFactory">Logger.</param>
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    protected override void ConfigureAppSpecific(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    protected override void ConfigureAppSpecific(IApplicationBuilder app, IWebHostEnvironment env)
     {
       return;
     }

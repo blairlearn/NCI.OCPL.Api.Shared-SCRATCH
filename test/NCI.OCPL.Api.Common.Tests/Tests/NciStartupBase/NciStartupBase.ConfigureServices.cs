@@ -1,7 +1,8 @@
 using System;
 using System.IO;
+using System.Text;
 
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -24,9 +25,26 @@ namespace NCI.OCPL.Api.Common
     [Fact]
     public void ConfigureServices_SubclassSetupServices()
     {
-      IHostingEnvironment hostenv = new MockHostingEnvironment();
+      string settings = @"
+        {
+          ""Elasticsearch"": {
+            ""Servers"": ""http://localhost:9200"",
+            ""Userid"": """",
+            ""Password"":  """",
+            ""MaximumRetries"": 5
+          },
+          ""Logging"": {
+            ""LogLevel"": {
+              ""Default"": ""Warning""
+            }
+          }
+        }";
 
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv){ CallBase = true };
+      ConfigurationBuilder builder = new ConfigurationBuilder();
+      builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(settings)));
+      IConfiguration config = builder.Build();
+
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(config){ CallBase = true };
 
       mockStartup.Protected().Setup("AddAdditionalConfigurationMappings", Moq.Protected.ItExpr.IsAny<IServiceCollection>());
       mockStartup.Protected().Setup("AddAppServices", Moq.Protected.ItExpr.IsAny<IServiceCollection>());
@@ -47,9 +65,22 @@ namespace NCI.OCPL.Api.Common
     [Fact]
     public void ConfigureServices_ElasticsearchBadConfiguration()
     {
-      IHostingEnvironment hostenv = new MockHostingEnvironment();
+      string appsettings = @"
+      {
+          ""Elasticsearch"": {
+              ""Servers"": """",
+              ""Userid"": """",
+              ""Password"": """",
+              ""MaximumRetries"": 5
+          }
+        }
+      ";
 
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv) { CallBase = true };
+      ConfigurationBuilder builder = new ConfigurationBuilder();
+      builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(appsettings)));
+      IConfiguration config = builder.Build();
+
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(config) { CallBase = true };
 
       NciStartupBase startup = mockStartup.Object;
 
@@ -72,26 +103,21 @@ namespace NCI.OCPL.Api.Common
     public void ConfigureServices_ElasticsearchGoodConfiguration()
     {
       string appsettings = @"
-{
-    ""Elasticsearch"": {
-        ""Servers"": ""http://localhost:9200"",
-        ""Userid"": """",
-        ""Password"": """",
-        ""MaximumRetries"": 5
-    }
-  }
+      {
+          ""Elasticsearch"": {
+              ""Servers"": ""http://localhost:9200"",
+              ""Userid"": """",
+              ""Password"": """",
+              ""MaximumRetries"": 5
+          }
+        }
       ";
 
-      // Create an appsettings.json in a location where only this test will see it.
-      string configLocation = Path.Join(Fixture.TestLocation, nameof(ConfigureServices_ElasticsearchGoodConfiguration));
-      DirectoryInfo di = Directory.CreateDirectory(configLocation);
-      File.WriteAllText(Path.Join(configLocation, "appsettings.json"), appsettings);
+      ConfigurationBuilder builder = new ConfigurationBuilder();
+      builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(appsettings)));
+      IConfiguration config = builder.Build();
 
-      // Customize the hosting environment for this test.
-      IHostingEnvironment hostenv = new MockHostingEnvironment();
-      hostenv.ContentRootPath = configLocation;
-
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv) { CallBase = true };
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(config) { CallBase = true };
 
       NciStartupBase startup = mockStartup.Object;
 
@@ -111,9 +137,26 @@ namespace NCI.OCPL.Api.Common
     [Fact]
     public void ConfigureServices_GetLoggers()
     {
-      IHostingEnvironment hostenv = new MockHostingEnvironment();
+      string settings = @"
+        {
+          ""Elasticsearch"": {
+            ""Servers"": ""http://localhost:9200"",
+            ""Userid"": """",
+            ""Password"":  """",
+            ""MaximumRetries"": 5
+          },
+          ""Logging"": {
+            ""LogLevel"": {
+              ""Default"": ""Warning""
+            }
+          }
+        }";
 
-      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(hostenv) { CallBase = true };
+      ConfigurationBuilder builder = new ConfigurationBuilder();
+      builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(settings)));
+      IConfiguration config = builder.Build();
+
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(config) { CallBase = true };
 
       mockStartup.Protected().Setup("AddAdditionalConfigurationMappings", Moq.Protected.ItExpr.IsAny<IServiceCollection>());
 

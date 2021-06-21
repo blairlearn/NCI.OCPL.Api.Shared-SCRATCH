@@ -1,6 +1,6 @@
-using System;
-
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+
 using Moq;
 using Xunit;
 
@@ -15,13 +15,14 @@ namespace NCI.OCPL.Api.Common
     [Fact]
     public void Constructor()
     {
-      IHostingEnvironment hostenv = new MockHostingEnvironment();
+      Mock<IConfiguration> mockConfiguration = new Mock<IConfiguration>();
+      IConfiguration config = mockConfiguration.Object;
 
-      Mock<NciStartupBase> startup = new Mock<NciStartupBase>(hostenv){ CallBase = true };
+      Mock<NciStartupBase> mockStartup = new Mock<NciStartupBase>(config){ CallBase = true };
 
-      NciStartupBase mock = startup.Object;
+      NciStartupBase startup = mockStartup.Object;
 
-      Assert.NotNull(mock.Configuration);
+      Assert.NotNull(startup.Configuration);
     }
   }
 }

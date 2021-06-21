@@ -12,8 +12,11 @@ on:
       - 'hotfix/**'
       - 'release/**'
       - 'feature/**'
+
   ## Any pull request.
   pull_request:
+env:
+  DOTNET_NOLOGO: true
 
 jobs:
 
@@ -27,12 +30,11 @@ jobs:
         package: [NCI.OCPL.Api.Common, NCI.OCPL.Api.Common.Testing]
     steps:
       - uses: actions/checkout@v2
-        ## using latest LTS releases - also it MUST be the SDK version,
-        ## which have stupidly high numbers for the patch version.
+        ## using latest LTS releases - also it MUST be the SDK version.
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '2.1.607'
+          dotnet-version: '3.1.x'
       - name: Build with dotnet
         run: dotnet build --configuration Release /WarnAsError
       - name: Unit Tests (with Coverage)
@@ -50,11 +52,12 @@ jobs:
           path: ${{matrix.package}}.lcov
         if: matrix.operating-system != 'windows-latest'
       - name: Publish
-        run: dotnet publish -c Release -o $GITHUB_WORKSPACE/out src/${{matrix.package}}/
+        run: dotnet publish --configuration Release --output $GITHUB_WORKSPACE/out src/${{matrix.package}}/
         shell: bash
+        # Add the NuGet package to the build artifact.
       - name: Create NuGet package for ${{matrix.package}}
         run: |
-          dotnet pack --configuration Release src/${{matrix.package}}
+          dotnet pack --configuration Release --output $GITHUB_WORKSPACE/out src/${{matrix.package}}
         shell: bash
       - name: Record metadata
         env:
@@ -76,12 +79,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        ## using latest LTS releases - also it MUST be the SDK version,
-        ## which have stupidly high numbers for the patch version.
+        ## using latest LTS releases - also it MUST be the SDK version.
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '2.1.607'
+          dotnet-version: '3.1.x'
       - name: Setup test output directory
         run: |
               ## Create test output and API logging location
@@ -155,12 +157,14 @@ jobs:
     # Only publish packages if the run was triggered by a push to main/master.
     if: ${{ github.event_name == 'push' && ( github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' ) }}
 
-    name: Build NuGet package for ${{matrix.package}}
+    name: Publish ${{matrix.package}} as NuGet package.
     runs-on: windows-latest
     needs:
       - extract_build_info
       - test_build_release
       - integration_tests
+    env:
+      OWNER: ${{ needs.extract_build_info.outputs.repo_owner }}
     strategy:
       matrix:
         package:
@@ -168,27 +172,26 @@ jobs:
           - NCI.OCPL.Api.Common.Testing
 
     steps:
-      - uses: actions/checkout@v2
       - name: Download Published Artifact
         uses: actions/download-artifact@v1
         with:
           name: ${{matrix.package}}-windows-latest
-          path: built-api
-        ## using latest LTS releases - also it MUST be the SDK version,
-        ## which have stupidly high numbers for the patch version.
+          path: ${{ github.workspace }}
+        ## using latest LTS releases - also it MUST be the SDK version.
       - name: Setup dotnet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '2.1.607'
-          source-url: https://nuget.pkg.github.com/${{env.OWNER}}/index.json
+          dotnet-version: '3.1.x'
+          source-url: "https://nuget.pkg.github.com/${{ env.OWNER }}/index.json"
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          OWNER: ${{ needs.extract_build_info.outputs.repo_owner }}
-      # This outputs a bogus warning that "No API Key was provided and no API Key could be found."
-      # This is a bug in the dotnet program and not something wrong with the build process.
+        # This outputs a bogus warning that "No API Key was provided and no API Key could be found."
+        # This is a bug in the dotnet program and not something wrong with the build process.
+        # If this fails with a message saying "Forbidden" and the repository name, check that the
+        # repository being built-in matches the one in the .csproj files' <RepositoryUrl> element.
       - name: Publish NuGet package for ${{matrix.package}}
         run: |
-          dotnet nuget push src/${{matrix.package}}/bin/Release/*.nupkg
+          dotnet nuget push ./*.nupkg
         shell: bash
 
 
