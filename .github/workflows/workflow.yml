@@ -153,18 +153,57 @@ jobs:
                 echo "Tests passed"
               fi
 
+  determine_whether_to_publish:
+
+    # This an annoying workaround. Workflows have the ability to conditionally run a job by
+    # using job.<job_id>.if and evaluating an expression, but the operations availble in an expression
+    # don't allow us to evaluate whether the branch name matches a pattern.
+    #
+    # Additionally, although individual steps may also run conditionally (jobs.<job_id>.steps[*].if),
+    # there's no ability to stop a job, shy of adding a "continue?" condition on every step.
+    # So, we end up with an additional job, just for the purpose of deciding whether another job
+    # should execute. (And yes, technically that decision could be one of the items exported from the
+    # extract_build_info job, but that's inconsistent with the job's definition in the other API workflows.)
+
+    name: Should NuGet packages be published?
+    runs-on: windows-latest
+    outputs:
+      should_publish: ${{ steps.set_outputs.outputs.should_publish }}
+    needs:
+      - extract_build_info
+      - integration_tests
+
+    steps:
+      - name: Set outputs
+        id: set_outputs
+        run: |
+          if [[ github.event_name == 'push' \
+            && $(expr match '${{ needs.extract_build_info.outputs.branch_name }}' 'v[0-9]*\.x$') -gt 0 ]]
+          then
+            SHOULD_PUBLISH=1
+          else
+            SHOULD_PUBLISH=0
+          fi
+
+          echo ${SHOULD_PUBLISH}
+          echo ::set-output name=should_publish::${SHOULD_PUBLISH}
+        shell: bash
+
+
   publish_nuget_packages:
+
     # Only publish packages if the run was triggered by a push to the version number branch.
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/v1.x' }}
+    if: ${{ needs.determine_whether_to_publish.outputs.should_publish == 1 }}
 
     name: Publish ${{matrix.package}} as NuGet package.
     runs-on: windows-latest
     needs:
+      - determine_whether_to_publish
       - extract_build_info
-      - test_build_release
       - integration_tests
     env:
       OWNER: ${{ needs.extract_build_info.outputs.repo_owner }}
+      SHOULD_RUN: ${{ needs.determine_whether_to_publish.outputs.should_publish }}
     strategy:
       matrix:
         package:
