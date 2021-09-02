@@ -177,7 +177,7 @@ jobs:
       - name: Set outputs
         id: set_outputs
         run: |
-          if [[ github.event_name == 'push' \
+          if [[ ${{ github.event_name }}  == 'push' \
             && $(expr match '${{ needs.extract_build_info.outputs.branch_name }}' 'v[0-9]*\.x$') -gt 0 ]]
           then
             SHOULD_PUBLISH=1
