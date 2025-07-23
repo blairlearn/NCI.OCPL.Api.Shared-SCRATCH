@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference AllowExplicitVersion="True" Include="Microsoft.AspNetCore.App" Version="2.1.4">
+    <PackageReference AllowExplicitVersion="True" Include="Microsoft.AspNetCore.App" Version="2.1.22">
       <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
       <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
     </PackageReference>

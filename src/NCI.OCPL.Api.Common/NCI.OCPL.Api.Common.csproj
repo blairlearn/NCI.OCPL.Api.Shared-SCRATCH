@@ -11,9 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
     <PackageReference Include="NEST" Version="7.9.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.2.2" />
-    <PackageReference AllowExplicitVersion="True" Include="Microsoft.AspNetCore.App" Version="2.1.4" />
+    <PackageReference AllowExplicitVersion="True" Include="Microsoft.AspNetCore.App" Version="2.1.22" />
   </ItemGroup>
 </Project>
